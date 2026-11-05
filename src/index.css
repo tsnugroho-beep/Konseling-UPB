@@ -1,0 +1,245 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Clash Grotesk Font Family */
+@font-face {
+  font-family: 'Clash Grotesk';
+  src: url('/fonts/ClashGrotesk-Variable.woff2') format('woff2'),
+       url('/fonts/ClashGrotesk-Variable.woff') format('woff'),
+       url('/fonts/ClashGrotesk-Variable.ttf') format('truetype');
+  font-weight: 200 700;
+  font-display: swap;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Clash Grotesk';
+  src: url('/fonts/ClashGrotesk-Extralight.woff2') format('woff2'),
+       url('/fonts/ClashGrotesk-Extralight.woff') format('woff'),
+       url('/fonts/ClashGrotesk-Extralight.ttf') format('truetype');
+  font-weight: 200;
+  font-display: swap;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Clash Grotesk';
+  src: url('/fonts/ClashGrotesk-Light.woff2') format('woff2'),
+       url('/fonts/ClashGrotesk-Light.woff') format('woff'),
+       url('/fonts/ClashGrotesk-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-display: swap;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Clash Grotesk';
+  src: url('/fonts/ClashGrotesk-Regular.woff2') format('woff2'),
+       url('/fonts/ClashGrotesk-Regular.woff') format('woff'),
+       url('/fonts/ClashGrotesk-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-display: swap;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Clash Grotesk';
+  src: url('/fonts/ClashGrotesk-Medium.woff2') format('woff2'),
+       url('/fonts/ClashGrotesk-Medium.woff') format('woff'),
+       url('/fonts/ClashGrotesk-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-display: swap;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Clash Grotesk';
+  src: url('/fonts/ClashGrotesk-Semibold.woff2') format('woff2'),
+       url('/fonts/ClashGrotesk-Semibold.woff') format('woff'),
+       url('/fonts/ClashGrotesk-Semibold.ttf') format('truetype');
+  font-weight: 600;
+  font-display: swap;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Clash Grotesk';
+  src: url('/fonts/ClashGrotesk-Bold.woff2') format('woff2'),
+       url('/fonts/ClashGrotesk-Bold.woff') format('woff'),
+       url('/fonts/ClashGrotesk-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-display: swap;
+  font-style: normal;
+}
+
+@theme {
+  --font-sans: 'Clash Grotesk', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-heading: 'Clash Grotesk', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+@layer base {
+  html, body {
+    font-family: 'Clash Grotesk', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    scroll-behavior: smooth;
+    color: #1E3348;
+    background-color: #E4F3FE;
+  }
+
+  html.dark, html.dark body {
+    color: #E2E8F0;
+    background-color: #09182B;
+    color-scheme: dark;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Clash Grotesk', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    letter-spacing: -0.02em;
+  }
+}
+
+/* Custom scrollbar for soothing UI */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #E6F4FE;
+}
+
+html.dark ::-webkit-scrollbar-track {
+  background: #0B1D32;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #93C5FD;
+  border-radius: 4px;
+}
+
+html.dark ::-webkit-scrollbar-thumb {
+  background: #1E446E;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #60A5FA;
+}
+
+html.dark ::-webkit-scrollbar-thumb:hover {
+  background: #2D639B;
+}
+
+/* Calming ambient animations */
+@keyframes floatOrb1 {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  33% {
+    transform: translate3d(42px, 28px, 0) scale(1.08);
+  }
+  66% {
+    transform: translate3d(-18px, 46px, 0) scale(0.96);
+  }
+}
+
+@keyframes floatOrb2 {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  40% {
+    transform: translate3d(-44px, 34px, 0) scale(1.07);
+  }
+  75% {
+    transform: translate3d(20px, -22px, 0) scale(0.95);
+  }
+}
+
+@keyframes floatOrb3 {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(38px, -34px, 0) scale(1.09);
+  }
+}
+
+@keyframes floatOrb4 {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(-32px, -28px, 0) scale(1.1);
+  }
+}
+
+@keyframes breatheRipple {
+  0%, 100% {
+    transform: scale(0.94);
+    opacity: 0.35;
+  }
+  50% {
+    transform: scale(1.06);
+    opacity: 0.85;
+  }
+}
+
+@keyframes driftMote {
+  0%, 100% {
+    transform: translate3d(0, 0, 0);
+    opacity: 0.3;
+  }
+  50% {
+    transform: translate3d(14px, -26px, 0);
+    opacity: 0.85;
+  }
+}
+
+.calming-orb-1 {
+  animation: floatOrb1 20s ease-in-out infinite;
+  will-change: transform;
+}
+
+.calming-orb-2 {
+  animation: floatOrb2 24s ease-in-out infinite;
+  will-change: transform;
+}
+
+.calming-orb-3 {
+  animation: floatOrb3 22s ease-in-out infinite;
+  will-change: transform;
+}
+
+.calming-orb-4 {
+  animation: floatOrb4 18s ease-in-out infinite;
+  will-change: transform;
+}
+
+.calming-ripple-1 {
+  animation: breatheRipple 10s ease-in-out infinite;
+}
+
+.calming-ripple-2 {
+  animation: breatheRipple 14s ease-in-out infinite 2s;
+}
+
+.calming-ripple-3 {
+  animation: breatheRipple 18s ease-in-out infinite 4s;
+}
+
+.calming-mote-1 { animation: driftMote 11s ease-in-out infinite; }
+.calming-mote-2 { animation: driftMote 15s ease-in-out infinite 2s; }
+.calming-mote-3 { animation: driftMote 13s ease-in-out infinite 4s; }
+.calming-mote-4 { animation: driftMote 17s ease-in-out infinite 1s; }
+.calming-mote-5 { animation: driftMote 14s ease-in-out infinite 3s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .calming-orb-1,
+  .calming-orb-2,
+  .calming-orb-3,
+  .calming-orb-4,
+  .calming-ripple-1,
+  .calming-ripple-2,
+  .calming-ripple-3,
+  .calming-mote {
+    animation: none;
+  }
+}

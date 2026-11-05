@@ -1,0 +1,6 @@
+{
+  "name": "Makara Lentera Jiwa - Layanan Konseling & Edukasi Psikologi",
+  "description": "Platform konseling psikologi profesional, aman, dan rahasia yang terinspirasi dari Makara UI. Dilengkapi tes psikologi mandiri interaktif, edukasi kesehatan mental, dan sistem pendaftaran konseling via Google Form.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
