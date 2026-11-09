@@ -109,7 +109,7 @@ export const GoogleFormModal: React.FC<GoogleFormModalProps> = ({
           <div className="space-y-2 text-xs sm:text-sm text-stone-600 dark:text-slate-300">
             <div className="flex items-start gap-2.5">
               <span className="w-5 h-5 rounded-full bg-stone-100 dark:bg-sky-900/70 text-[#0EA5E9] dark:text-sky-300 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">1</span>
-              <span>Klik tombol di bawah untuk membuka <strong>Google Form resmi</strong>.</span>
+              <span>Klik tombol di bawah untuk membuka <strong>Google Form</strong>.</span>
             </div>
             <div className="flex items-start gap-2.5">
               <span className="w-5 h-5 rounded-full bg-stone-100 dark:bg-sky-900/70 text-[#0EA5E9] dark:text-sky-300 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">2</span>

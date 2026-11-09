@@ -7,25 +7,25 @@ export const CrisisBanner: React.FC = () => {
 
   return (
     <>
-      <div className="relative z-10 bg-[#CBE8FD] dark:bg-[#0D253F] border-b border-sky-300/75 dark:border-sky-800/70 text-[#0C4A6E] dark:text-sky-200 text-xs py-2 px-4 transition-colors duration-300">
+      <div className="relative z-10 bg-[#075985] dark:bg-[#071629] border-b border-sky-600/40 dark:border-sky-800/70 text-sky-100 text-xs py-2 px-4 transition-colors duration-300">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-center sm:text-left">
           <div className="flex items-center gap-2">
-            <span className="inline-block w-2 h-2 rounded-full bg-[#0EA5E9] dark:bg-sky-400" aria-hidden="true" />
-            <p className="font-medium tracking-wide">
+            <span className="inline-block w-2 h-2 rounded-full bg-amber-400 dark:bg-amber-400 animate-pulse" aria-hidden="true" />
+            <p className="font-medium tracking-wide text-sky-100">
               Sedang dalam kondisi krisis emosional atau butuh pertolongan darurat? Bantuan selalu tersedia.
             </p>
           </div>
           <div className="flex items-center gap-3 shrink-0">
             <button
               onClick={() => setIsOpen(true)}
-              className="text-[#0284C7] dark:text-sky-300 hover:text-[#0369A1] dark:hover:text-white underline underline-offset-4 font-semibold transition-colors cursor-pointer"
+              className="text-white hover:text-sky-200 underline underline-offset-4 font-semibold transition-colors cursor-pointer"
             >
               Lihat Hotline Krisis (24 Jam)
             </button>
-            <span className="text-sky-400 dark:text-sky-600 hidden sm:inline" aria-hidden="true">·</span>
+            <span className="text-sky-300/60 hidden sm:inline" aria-hidden="true">·</span>
             <a
               href="tel:119"
-              className="hidden sm:inline-flex items-center gap-1.5 bg-[#0EA5E9] hover:bg-[#0284C7] px-2.5 py-0.5 rounded text-white font-medium transition-colors"
+              className="hidden sm:inline-flex items-center gap-1.5 bg-[#0EA5E9] hover:bg-[#0284C7] px-2.5 py-0.5 rounded text-white font-medium transition-colors shadow-xs"
             >
               <PhoneCall className="w-3 h-3" />
               <span>Hubungi 119 ext. 8</span>

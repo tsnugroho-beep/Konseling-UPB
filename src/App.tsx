@@ -14,12 +14,104 @@ import { FaqSection } from './components/FaqSection';
 import { Footer } from './components/Footer';
 import { GoogleFormModal } from './components/GoogleFormModal';
 import { CalmingBackground } from './components/CalmingBackground';
+import { AdminLogin } from './components/admin/AdminLogin';
+import { AdminDashboard } from './components/admin/AdminDashboard';
+import { getLoggedInAdmin, AdminUser, clearLoggedInAdmin, getAdminStoredData } from './data/adminStore';
 import { DEFAULT_GOOGLE_FORM_URL, ADMIN_WHATSAPP_NUMBER } from './data/mockData';
 import { CounselingService } from './types';
 import { MessageSquare, ArrowUpRight, ChevronRight, ChevronLeft } from 'lucide-react';
 
 export default function App() {
-  const googleFormUrl = DEFAULT_GOOGLE_FORM_URL;
+  const [adminData, setAdminData] = useState(() => getAdminStoredData());
+  const googleFormUrl = adminData.registrationSettings?.googleFormUrl || DEFAULT_GOOGLE_FORM_URL;
+
+  useEffect(() => {
+    const handleUpdate = () => setAdminData(getAdminStoredData());
+    window.addEventListener('upb_admin_data_updated', handleUpdate);
+    window.addEventListener('storage', handleUpdate);
+    return () => {
+      window.removeEventListener('upb_admin_data_updated', handleUpdate);
+      window.removeEventListener('storage', handleUpdate);
+    };
+  }, []);
+
+  // Global Route State: 'portal' | 'admin-login' | 'admin-dashboard'
+  const [route, setRoute] = useState<'portal' | 'admin-login' | 'admin-dashboard'>(() => {
+    try {
+      const path = window.location.pathname;
+      const admin = getLoggedInAdmin();
+      if (path === '/dashboard') {
+        return admin ? 'admin-dashboard' : 'admin-login';
+      }
+      if (path === '/login') {
+        return admin ? 'admin-dashboard' : 'admin-login';
+      }
+      return 'portal';
+    } catch {
+      return 'portal';
+    }
+  });
+
+  const [currentAdmin, setCurrentAdmin] = useState<AdminUser | null>(() => getLoggedInAdmin());
+
+  // Listen to browser popstate/navigation
+  useEffect(() => {
+    const handlePopState = () => {
+      const path = window.location.pathname;
+      const admin = getLoggedInAdmin();
+      if (path === '/dashboard') {
+        if (!admin) {
+          window.history.replaceState(null, '', '/login');
+          setRoute('admin-login');
+        } else {
+          setRoute('admin-dashboard');
+        }
+      } else if (path === '/login') {
+        if (admin) {
+          window.history.replaceState(null, '', '/dashboard');
+          setRoute('admin-dashboard');
+        } else {
+          setRoute('admin-login');
+        }
+      } else {
+        setRoute('portal');
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
+  const navigateTo = (newRoute: 'portal' | 'admin-login' | 'admin-dashboard') => {
+    if (newRoute === 'admin-dashboard') {
+      const admin = getLoggedInAdmin();
+      if (!admin) {
+        window.history.pushState(null, '', '/login');
+        setRoute('admin-login');
+        return;
+      }
+      window.history.pushState(null, '', '/dashboard');
+    } else if (newRoute === 'admin-login') {
+      window.history.pushState(null, '', '/login');
+    } else {
+      window.history.pushState(null, '', '/');
+    }
+    setRoute(newRoute);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleAdminLoginSuccess = (admin: AdminUser) => {
+    setCurrentAdmin(admin);
+    window.history.pushState(null, '', '/dashboard');
+    setRoute('admin-dashboard');
+  };
+
+  const handleAdminLogout = () => {
+    clearLoggedInAdmin();
+    setCurrentAdmin(null);
+    window.history.pushState(null, '', '/login');
+    setRoute('admin-login');
+  };
 
   const [isDark, setIsDark] = useState<boolean>(() => {
     try {
@@ -52,8 +144,8 @@ export default function App() {
   const tabsOrder = [
     { id: 'beranda', title: 'Beranda', mobileTitle: 'Beranda' },
     { id: 'tes-psikologi', title: 'Tes Psikologi', mobileTitle: 'Tes Psikologi' },
-    { id: 'alur-daftar', title: 'Cara Mendaftar', mobileTitle: 'Alur Daftar' },
     { id: 'artikel', title: 'Artikel', mobileTitle: 'Artikel' },
+    { id: 'alur-daftar', title: 'Cara Mendaftar', mobileTitle: 'Cara Mendaftar' },
     { id: 'faq', title: 'FAQ', mobileTitle: 'FAQ' },
   ];
 
@@ -76,6 +168,38 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  // 1. Guarded Route: Admin Dashboard
+  if (route === 'admin-dashboard') {
+    if (!currentAdmin) {
+      // Route Guarding: redirect unauthenticated user to login
+      return (
+        <AdminLogin
+          onLoginSuccess={handleAdminLoginSuccess}
+          onBackToPublicSite={() => navigateTo('portal')}
+        />
+      );
+    }
+
+    return (
+      <AdminDashboard
+        adminUser={currentAdmin}
+        onLogout={handleAdminLogout}
+        onViewPublicPortal={() => navigateTo('portal')}
+      />
+    );
+  }
+
+  // 2. Closed Route: Admin Login
+  if (route === 'admin-login') {
+    return (
+      <AdminLogin
+        onLoginSuccess={handleAdminLoginSuccess}
+        onBackToPublicSite={() => navigateTo('portal')}
+      />
+    );
+  }
+
+  // 3. Public Student Portal
   return (
     <div className="relative isolate min-h-screen flex flex-col bg-[#E4F3FE] dark:bg-[#09182B] text-[#1E3348] dark:text-slate-100 selection:bg-[#0EA5E9]/20 selection:text-[#0C4A6E] dark:selection:bg-sky-400/25 dark:selection:text-sky-100 transition-colors duration-300">
       
@@ -187,6 +311,7 @@ export default function App() {
         <Footer
           onOpenBooking={handleOpenGeneralBooking}
           onNavigateTab={handleTabChange}
+          onOpenAdminLogin={() => navigateTo('admin-login')}
         />
       </div>
 
@@ -217,7 +342,7 @@ export default function App() {
           onClick={handleOpenGeneralBooking}
           className="flex items-center gap-2 px-5 py-3 rounded-full bg-[#0EA5E9] hover:bg-[#0284C7] text-white shadow-lg text-xs sm:text-sm font-semibold transition-all hover:scale-102 cursor-pointer"
         >
-          <span>Daftar Konseling (Free)</span>
+          <span>Daftar Konseling</span>
           <ArrowUpRight className="w-4 h-4" />
         </button>
       </div>

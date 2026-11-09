@@ -599,6 +599,8 @@ export const ARTICLES: Article[] = [
     ],
     conclusion: 'Ingatlah bahwa apa yang terasa begitu mengerikan pada pukul 02.00 dini hari sering kali terlihat jauh lebih sederhana dan dapat diselesaikan pada pukul 09.00 pagi setelah tubuhmu mendapatkan istirahat.',
     takeawayMessage: 'Jangan berdebat dengan pikiranmu saat mengantuk. Tuliskan di kertas, atur napas, dan izinkan dirimu tidur.',
+    viewsCount: 184,
+    likesCount: 52,
     author: {
       name: 'Tim Konseling Mahasiswa DIRMAWA UPB',
       role: 'Layanan Konseling & Edukasi Psikologi',
@@ -633,6 +635,8 @@ export const ARTICLES: Article[] = [
     ],
     conclusion: 'Kamu adalah manusia dengan batas toleransi biologis dan psikologis yang nyata, bukan mesin pencetak IPK atau skripsi instan. Beristirahat bukanlah hadiah yang harus kamu dapatkan setelah kelelahan, melainkan hak dasarmu untuk tetap sehat.',
     takeawayMessage: 'Menyerah sejenak bukan berarti gagal; itu adalah cara tubuhmu menuntut hak untuk pulih.',
+    viewsCount: 247,
+    likesCount: 71,
     author: {
       name: 'Tim Konseling Mahasiswa DIRMAWA UPB',
       role: 'Layanan Konseling & Edukasi Psikologi',
@@ -671,6 +675,8 @@ export const ARTICLES: Article[] = [
     ],
     conclusion: 'Menjaga batasan pribadi bukan berarti kamu tidak peduli. Itu berarti kamu cukup peduli pada kesehatan jiwamu sendiri agar tetap memiliki energi murni untuk orang-orang tersayang.',
     takeawayMessage: 'Setiap kali kamu berkata "ya" pada hal yang ingin kamu tolak, kamu sedang berkata "tidak" pada ketenangan jiwamu sendiri.',
+    viewsCount: 195,
+    likesCount: 63,
     author: {
       name: 'Tim Konseling Mahasiswa DIRMAWA UPB',
       role: 'Layanan Konseling & Edukasi Psikologi',
@@ -697,6 +703,8 @@ export const ARTICLES: Article[] = [
     ],
     conclusion: 'Mengizinkan dirimu menangis saat kewalahan dengan tugas kuliah sama wajarnya dengan membiarkan tubuhmu berkeringat saat berolahraga. Berhentilah menuntut dirimu menjadi manusia tanpa emosi.',
     takeawayMessage: 'Air mata adalah cara jiwamu berbicara bahwa beban yang kamu pikul sudah terlalu berat untuk disimpan sendirian.',
+    viewsCount: 310,
+    likesCount: 94,
     author: {
       name: 'Tim Konseling Mahasiswa DIRMAWA UPB',
       role: 'Layanan Konseling & Edukasi Psikologi',
@@ -727,6 +735,8 @@ export const ARTICLES: Article[] = [
     ],
     conclusion: 'Konseling bukan tentang dinasihati atau disalahkan. Konseling adalah ruang aman di mana kamu didengarkan seutuhnya sebagai manusia yang sedang berjuang.',
     takeawayMessage: 'Kamu tidak perlu menunggu masalahmu "sangat parah" terlebih dahulu untuk boleh berkonsultasi dengan konselor.',
+    viewsCount: 162,
+    likesCount: 45,
     author: {
       name: 'Tim Konseling Mahasiswa DIRMAWA UPB',
       role: 'Layanan Konseling & Edukasi Psikologi',

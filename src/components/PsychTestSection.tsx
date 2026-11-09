@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
-import { 
-  CheckCircle, 
-  RotateCcw, 
-  ArrowRight, 
-  ArrowLeft, 
-  ArrowUpRight, 
-  ClipboardCopy, 
-  ShieldAlert, 
+import React, { useState, useEffect } from 'react';
+import {
+  CheckCircle,
+  RotateCcw,
+  ArrowRight,
+  ArrowLeft,
+  ArrowUpRight,
+  ClipboardCopy,
+  ShieldAlert,
   FileText,
   Clock,
   Brain,
@@ -17,6 +17,7 @@ import {
   HelpCircle
 } from 'lucide-react';
 import { PSYCHOLOGICAL_TESTS } from '../data/mockData';
+import { getAdminStoredData } from '../data/adminStore';
 import { PsychologicalTest, ScoreBand } from '../types';
 
 interface PsychTestSectionProps {
@@ -25,11 +26,27 @@ interface PsychTestSectionProps {
   onNavigateTab?: (tabId: string) => void;
 }
 
-export const PsychTestSection: React.FC<PsychTestSectionProps> = ({ 
-  onOpenBooking, 
+export const PsychTestSection: React.FC<PsychTestSectionProps> = ({
+  onOpenBooking,
   onSetBookingReferralNote,
   onNavigateTab
 }) => {
+  const [assessmentsList, setAssessmentsList] = useState<PsychologicalTest[]>(() => {
+    return getAdminStoredData().assessments;
+  });
+
+  useEffect(() => {
+    const handleUpdate = () => {
+      setAssessmentsList(getAdminStoredData().assessments);
+    };
+    window.addEventListener('upb_admin_data_updated', handleUpdate);
+    window.addEventListener('storage', handleUpdate);
+    return () => {
+      window.removeEventListener('upb_admin_data_updated', handleUpdate);
+      window.removeEventListener('storage', handleUpdate);
+    };
+  }, []);
+
   // When activeTestId is null, show test cards catalogue.
   // When activeTestId has a value, show that specific test questionnaire/result.
   const [activeTestId, setActiveTestId] = useState<string | null>(null);
@@ -38,8 +55,8 @@ export const PsychTestSection: React.FC<PsychTestSectionProps> = ({
   const [isCompleted, setIsCompleted] = useState<boolean>(false);
   const [copyFeedback, setCopyFeedback] = useState<boolean>(false);
 
-  const activeTest: PsychologicalTest | undefined = 
-    PSYCHOLOGICAL_TESTS.find((t) => t.id === activeTestId);
+  const activeTest: PsychologicalTest | undefined =
+    assessmentsList.find((t) => t.id === activeTestId);
 
   const totalQuestions = activeTest ? activeTest.questions.length : 0;
   const currentQuestion = activeTest ? activeTest.questions[currentQuestionIndex] : null;
@@ -155,11 +172,11 @@ export const PsychTestSection: React.FC<PsychTestSectionProps> = ({
 
   return (
     <div className="space-y-8 animate-in fade-in duration-300">
-      
+
       {/* 1. VIEW MODE A: TEST CARDS CATALOGUE (Default view) */}
       {!activeTestId && (
         <div className="space-y-8">
-          
+
           {/* Section Heading */}
           <div className="text-center max-w-2xl mx-auto space-y-3">
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-[#0F3456] dark:text-white transition-colors">
@@ -170,9 +187,9 @@ export const PsychTestSection: React.FC<PsychTestSectionProps> = ({
             </p>
           </div>
 
-          {/* 3 Interactive Test Cards */}
+          {/* Interactive Test Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
-            {PSYCHOLOGICAL_TESTS.map((test) => {
+            {assessmentsList.map((test) => {
               const cardMeta = getTestCardDetails(test.id);
               const IconComponent = cardMeta.icon;
 
@@ -255,7 +272,7 @@ export const PsychTestSection: React.FC<PsychTestSectionProps> = ({
       {/* 2. VIEW MODE B: ACTIVE TEST QUESTIONNAIRE / RESULT */}
       {activeTest && (
         <div className="space-y-6">
-          
+
           {/* Top Bar: Back to Cards button & current test context */}
           <div className="max-w-4xl mx-auto flex items-center justify-between">
             <button
@@ -273,7 +290,7 @@ export const PsychTestSection: React.FC<PsychTestSectionProps> = ({
 
           {/* Test Card Container */}
           <div className="bg-white dark:bg-[#0F243C]/95 rounded-3xl border border-stone-200/90 dark:border-sky-800/70 shadow-sm p-6 sm:p-10 max-w-4xl mx-auto transition-all">
-            
+
             {/* Top metadata of active test */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-6 border-b border-stone-200 dark:border-sky-800/60 gap-2">
               <div>
@@ -291,7 +308,7 @@ export const PsychTestSection: React.FC<PsychTestSectionProps> = ({
                   {activeTest.title}
                 </h3>
               </div>
-              
+
               {!isCompleted && (
                 <div className="text-xs font-medium text-stone-500 dark:text-sky-200 bg-stone-100 dark:bg-[#15304E] px-3 py-1.5 rounded-lg shrink-0 self-start sm:self-center">
                   Pertanyaan {currentQuestionIndex + 1} dari {totalQuestions}
@@ -302,7 +319,7 @@ export const PsychTestSection: React.FC<PsychTestSectionProps> = ({
             {/* Test in Progress View */}
             {!isCompleted && currentQuestion ? (
               <div className="mt-8 space-y-6">
-                
+
                 {/* Progress Bar */}
                 <div className="w-full bg-stone-100 dark:bg-[#15304E] h-2 rounded-full overflow-hidden">
                   <div
@@ -326,18 +343,16 @@ export const PsychTestSection: React.FC<PsychTestSectionProps> = ({
                       <button
                         key={idx}
                         onClick={() => handleSelectOption(currentQuestion.id, option.score)}
-                        className={`w-full text-left p-4 rounded-xl border text-sm sm:text-base font-medium transition-all flex items-center justify-between cursor-pointer group ${
-                          isSelected
+                        className={`w-full text-left p-4 rounded-xl border text-sm sm:text-base font-medium transition-all flex items-center justify-between cursor-pointer group ${isSelected
                             ? 'border-[#0EA5E9] bg-[#0EA5E9]/8 dark:bg-sky-500/20 text-[#0F3456] dark:text-white shadow-2xs font-semibold'
                             : 'border-stone-200 dark:border-sky-800/65 bg-stone-50/40 dark:bg-[#132C49]/60 hover:bg-stone-50 dark:hover:bg-[#17365B] hover:border-stone-300 dark:hover:border-sky-600/70 text-stone-700 dark:text-slate-200'
-                        }`}
+                          }`}
                       >
                         <span>{option.label}</span>
-                        <div className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 transition-colors ${
-                          isSelected 
-                            ? 'border-[#0EA5E9] bg-[#0EA5E9] text-white' 
+                        <div className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 transition-colors ${isSelected
+                            ? 'border-[#0EA5E9] bg-[#0EA5E9] text-white'
                             : 'border-stone-300 dark:border-sky-700 group-hover:border-stone-400 dark:group-hover:border-sky-400'
-                        }`}>
+                          }`}>
                           {isSelected && <CheckCircle className="w-3.5 h-3.5" />}
                         </div>
                       </button>
@@ -384,10 +399,10 @@ export const PsychTestSection: React.FC<PsychTestSectionProps> = ({
             ) : isCompleted && currentResultBand ? (
               /* Completed / Result View */
               <div className="mt-8 space-y-8 animate-in fade-in duration-300">
-                
+
                 {/* Score Header Card */}
                 <div className="p-6 sm:p-7 rounded-2xl bg-[#F0F9FF] dark:bg-[#132C49] border border-stone-200 dark:border-sky-800/70 space-y-4">
-                  
+
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div>
                       <span className="text-xs font-semibold text-stone-500 dark:text-sky-300/80 uppercase tracking-wider">
@@ -494,7 +509,7 @@ export const PsychTestSection: React.FC<PsychTestSectionProps> = ({
                       onClick={handleProceedToBooking}
                       className="inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-semibold text-white bg-[#0EA5E9] hover:bg-[#0284C7] rounded-xl shadow-xs transition-colors cursor-pointer"
                     >
-                      <span>Daftar Konseling via Google Form</span>
+                      <span>Daftar Konseling</span>
                       <ArrowUpRight className="w-4 h-4" />
                     </button>
 
@@ -531,7 +546,7 @@ export const PsychTestSection: React.FC<PsychTestSectionProps> = ({
                   </div>
 
                   <div className="flex items-center gap-2">
-                    {PSYCHOLOGICAL_TESTS.filter(t => t.id !== activeTestId).map((otherTest) => (
+                    {assessmentsList.filter(t => t.id !== activeTestId).map((otherTest) => (
                       <button
                         key={otherTest.id}
                         onClick={() => handleStartTest(otherTest.id)}

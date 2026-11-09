@@ -73,13 +73,13 @@
 }
 
 @theme {
-  --font-sans: 'Clash Grotesk', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-heading: 'Clash Grotesk', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-sans: 'Open Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-heading: 'Open Sans', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 @layer base {
   html, body {
-    font-family: 'Clash Grotesk', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: 'Open Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     scroll-behavior: smooth;
     color: #1E3348;
     background-color: #E4F3FE;
@@ -92,8 +92,8 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Clash Grotesk', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-    letter-spacing: -0.02em;
+    font-family: 'Open Sans', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    letter-spacing: -0.01em;
   }
 }
 
@@ -242,4 +242,42 @@ html.dark ::-webkit-scrollbar-thumb:hover {
   .calming-mote {
     animation: none;
   }
+}
+
+/* Rich Text Content Formatting */
+.article-rich-content a {
+  color: #0284c7;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  font-weight: 600;
+  transition: color 0.15s ease;
+}
+
+.article-rich-content a:hover {
+  color: #0369a1;
+}
+
+.dark .article-rich-content a {
+  color: #38bdf8;
+}
+
+.article-rich-content p {
+  margin-bottom: 1rem;
+  line-height: 1.75;
+}
+
+.article-rich-content strong,
+.article-rich-content b {
+  font-weight: 700;
+  color: inherit;
+}
+
+.article-rich-content em,
+.article-rich-content i {
+  font-style: italic;
+}
+
+.article-rich-content u {
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }

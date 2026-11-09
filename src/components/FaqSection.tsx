@@ -1,9 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ChevronDown, ShieldCheck } from 'lucide-react';
+import { getAdminStoredData } from '../data/adminStore';
 import { FAQS } from '../data/mockData';
+import { FaqItem } from '../types';
 
 export const FaqSection: React.FC = () => {
+  const [faqs, setFaqs] = useState<FaqItem[]>(() => {
+    return getAdminStoredData().faqs || FAQS;
+  });
   const [openIndex, setOpenIndex] = useState<number | null>(0);
+
+  useEffect(() => {
+    const handleUpdate = () => {
+      setFaqs(getAdminStoredData().faqs || FAQS);
+    };
+    window.addEventListener('upb_admin_data_updated', handleUpdate);
+    window.addEventListener('storage', handleUpdate);
+    return () => {
+      window.removeEventListener('upb_admin_data_updated', handleUpdate);
+      window.removeEventListener('storage', handleUpdate);
+    };
+  }, []);
 
   const toggleFaq = (index: number) => {
     setOpenIndex(openIndex === index ? null : index);
@@ -24,7 +41,7 @@ export const FaqSection: React.FC = () => {
 
       {/* FAQ Accordion List */}
       <div className="space-y-3.5">
-        {FAQS.map((faq, idx) => {
+        {faqs.map((faq, idx) => {
           const isOpen = openIndex === idx;
           return (
             <div

@@ -6,3 +6,14 @@ coverage/
 *.log
 .env*
 !.env.example
+
+# File catatan lokal (tidak di-push ke GitHub)
+CATATAN_PROYEK.md
+*.local.md
+notes.md
+
+# Proteksi berkas akun & data rahasia
+data akun.xlsx
+*.xlsx
+*.xls
+private/

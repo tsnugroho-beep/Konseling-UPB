@@ -5,9 +5,10 @@ import { CLINIC_ADDRESS, CLINIC_EMAIL, ADMIN_WHATSAPP_NUMBER, ADMIN_WHATSAPP_DIS
 interface FooterProps {
   onOpenBooking?: () => void;
   onNavigateTab?: (tabId: string) => void;
+  onOpenAdminLogin?: () => void;
 }
 
-export const Footer: React.FC<FooterProps> = () => {
+export const Footer: React.FC<FooterProps> = ({ onOpenAdminLogin }) => {
   return (
     <footer className="bg-gradient-to-br from-[#0284C7] via-[#0369A1] to-[#075985] dark:from-[#071629] dark:via-[#0A1E36] dark:to-[#061222] text-sky-100 pt-16 pb-12 border-t border-sky-400/40 dark:border-sky-800/65 transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -29,7 +30,7 @@ export const Footer: React.FC<FooterProps> = () => {
                 />
               </div>
               <div className="flex flex-col">
-                <span className="text-lg font-bold tracking-tight text-white font-serif leading-tight">
+                <span className="text-lg font-bold tracking-tight text-white leading-tight">
                   Konseling Mahasiswa
                 </span>
                 <span className="text-[11px] text-sky-100/90 font-medium leading-tight mt-0.5">
@@ -86,12 +87,24 @@ export const Footer: React.FC<FooterProps> = () => {
           <p>
             © {new Date().getFullYear()} Konseling Mahasiswa · Direktorat Kemahasiswaan dan Alumni (DIRMAWA) Universitas Pelita Bangsa.
           </p>
-          <div className="flex items-center gap-4 text-[11px]">
+          <div className="flex items-center gap-4 text-[11px] flex-wrap justify-center sm:justify-end">
             <span>100% Free untuk Mahasiswa</span>
             <span aria-hidden="true">·</span>
             <span>Kode Etik HIMPSI</span>
             <span aria-hidden="true">·</span>
             <span>Hotline Darurat: 119 ext. 8</span>
+            {onOpenAdminLogin && (
+              <>
+                <span aria-hidden="true">·</span>
+                <button
+                  type="button"
+                  onClick={onOpenAdminLogin}
+                  className="text-sky-300 hover:text-white underline underline-offset-2 opacity-80 hover:opacity-100 transition-opacity cursor-pointer font-medium"
+                >
+                  Portal Admin
+                </button>
+              </>
+            )}
           </div>
         </div>
 

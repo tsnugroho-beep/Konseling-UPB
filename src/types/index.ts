@@ -48,9 +48,12 @@ export interface Article {
   publishedDate: string;
   excerpt: string;
   intro: string;
+  imageUrl?: string;
   sections: ArticleSection[];
   conclusion: string;
   takeawayMessage: string;
+  viewsCount?: number;
+  likesCount?: number;
   author: {
     name: string;
     role: string;
@@ -86,9 +89,10 @@ export interface Psychologist {
 }
 
 export interface FaqItem {
+  id?: string;
   question: string;
   answer: string;
-  category: 'Pendaftaran' | 'Kerahasiaan' | 'Sesi Konseling' | 'Biaya';
+  category?: string;
 }
 
 export interface MoodCheck {
