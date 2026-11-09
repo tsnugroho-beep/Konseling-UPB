@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, BookOpen, Clock, Calendar, ArrowRight, ArrowLeft, X, UserCheck, Heart, Sparkles, Share2, GraduationCap, Eye } from 'lucide-react';
+import { Search, BookOpen, Clock, Calendar, ArrowRight, ArrowLeft, X, UserCheck, Heart, Sparkles, Share2, GraduationCap, Eye, Copy, Check } from 'lucide-react';
 import { ARTICLES } from '../data/mockData';
 import { getAdminStoredData, incrementArticleView, toggleArticleLike, isArticleLiked } from '../data/adminStore';
 import { Article } from '../types';
@@ -78,7 +78,8 @@ export const ArticlesSection: React.FC<ArticlesSectionProps> = ({
   const [selectedCategory, setSelectedCategory] = useState<string>('Semua');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [activeArticle, setActiveArticle] = useState<Article | null>(null);
-  const [shareToast, setShareToast] = useState(false);
+  const [shareModalArticle, setShareModalArticle] = useState<Article | null>(null);
+  const [isCopied, setIsCopied] = useState(false);
   const [likedMap, setLikedMap] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
@@ -107,18 +108,39 @@ export const ArticlesSection: React.FC<ArticlesSectionProps> = ({
     return matchesCategory && matchesSearch;
   });
 
-  const handleShare = (article: Article) => {
-    if (navigator.share) {
-      navigator.share({
-        title: article.title,
-        text: article.excerpt,
-        url: window.location.href,
-      }).catch(() => {});
+  const handleOpenShare = (article: Article) => {
+    setShareModalArticle(article);
+    setIsCopied(false);
+  };
+
+  const handleCopyLink = () => {
+    const url = window.location.href;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(url).then(() => {
+        setIsCopied(true);
+        setTimeout(() => setIsCopied(false), 2000);
+      }).catch(() => {
+        fallbackCopy(url);
+      });
     } else {
-      navigator.clipboard.writeText(`${article.title} - ${window.location.href}`);
-      setShareToast(true);
-      setTimeout(() => setShareToast(false), 2000);
+      fallbackCopy(url);
     }
+  };
+
+  const fallbackCopy = (text: string) => {
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.style.position = 'fixed';
+    textArea.style.opacity = '0';
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    try {
+      document.execCommand('copy');
+      setIsCopied(true);
+      setTimeout(() => setIsCopied(false), 2000);
+    } catch (err) {}
+    document.body.removeChild(textArea);
   };
 
   const handleToggleLike = (articleId: string) => {
@@ -142,6 +164,192 @@ export const ArticlesSection: React.FC<ArticlesSectionProps> = ({
       viewsCount: (article.viewsCount || 0) + 1,
     });
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Helper to render instant, lightweight, non-laggy share modal for social media & link copying
+  const renderShareModal = () => {
+    if (!shareModalArticle) return null;
+
+    const currentUrl = typeof window !== 'undefined' ? window.location.href : '';
+    const shareTitle = shareModalArticle.title;
+    const shareText = `*${shareTitle}*\n\n${shareModalArticle.excerpt}\n\nBaca artikel selengkapnya di Layanan Konseling UPB:\n${currentUrl}`;
+
+    return (
+      <div 
+        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-150"
+        role="dialog"
+        aria-modal="true"
+        onClick={() => {
+          setShareModalArticle(null);
+          setIsCopied(false);
+        }}
+      >
+        <div 
+          className="bg-white dark:bg-[#0F243C] w-full max-w-md rounded-3xl p-6 sm:p-7 shadow-2xl border border-stone-200 dark:border-sky-800/80 text-stone-800 dark:text-slate-100 space-y-6 relative animate-in zoom-in-95 duration-150"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Header */}
+          <div className="flex items-center justify-between border-b border-stone-100 dark:border-sky-800/60 pb-4">
+            <div className="flex items-center gap-2.5">
+              <div className="w-9 h-9 rounded-xl bg-sky-50 dark:bg-sky-950/50 text-[#0284C7] dark:text-sky-400 flex items-center justify-center">
+                <Share2 className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="text-base font-bold text-stone-900 dark:text-white leading-tight">
+                  Bagikan Artikel
+                </h3>
+                <p className="text-xs text-stone-500 dark:text-slate-400">
+                  Sebarkan ke teman atau media sosial
+                </p>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => {
+                setShareModalArticle(null);
+                setIsCopied(false);
+              }}
+              className="p-1.5 text-stone-400 hover:text-stone-700 dark:hover:text-white rounded-full hover:bg-stone-100 dark:hover:bg-[#15304E] transition-colors cursor-pointer"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+
+          {/* Article Preview Snippet */}
+          <div className="p-3.5 rounded-2xl bg-stone-50 dark:bg-[#132C49] border border-stone-200/80 dark:border-sky-800/60 space-y-1">
+            <span className="text-[10px] uppercase tracking-wider font-bold text-[#0EA5E9] dark:text-sky-400">
+              {shareModalArticle.category}
+            </span>
+            <h4 className="text-xs sm:text-sm font-bold text-stone-900 dark:text-white leading-snug line-clamp-2">
+              {shareModalArticle.title}
+            </h4>
+          </div>
+
+          {/* Social Media Buttons */}
+          <div className="space-y-2.5">
+            <label className="block text-xs font-bold text-stone-600 dark:text-slate-400 uppercase tracking-wider">
+              Bagikan ke Media Sosial
+            </label>
+
+            <div className="grid grid-cols-3 sm:grid-cols-5 gap-2.5">
+              {/* WhatsApp */}
+              <a
+                href={`https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex flex-col items-center justify-center p-3 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 hover:scale-105 transition-all text-emerald-700 dark:text-emerald-400 cursor-pointer group"
+              >
+                <div className="w-8 h-8 rounded-full bg-[#25D366] text-white flex items-center justify-center mb-1.5 shadow-2xs">
+                  <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                    <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
+                  </svg>
+                </div>
+                <span className="text-[11px] font-bold text-center">WhatsApp</span>
+              </a>
+
+              {/* Telegram */}
+              <a
+                href={`https://t.me/share/url?url=${encodeURIComponent(currentUrl)}&text=${encodeURIComponent(shareTitle)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex flex-col items-center justify-center p-3 rounded-2xl bg-sky-50 dark:bg-sky-950/40 border border-sky-200 dark:border-sky-800/60 hover:scale-105 transition-all text-sky-700 dark:text-sky-300 cursor-pointer group"
+              >
+                <div className="w-8 h-8 rounded-full bg-[#229ED9] text-white flex items-center justify-center mb-1.5 shadow-2xs">
+                  <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                    <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.161c-.18.718-3.262 13.682-3.447 14.502-.128.567-.442.716-.836.488l-4.721-3.482-2.278 2.193c-.252.252-.464.464-.951.464l.339-4.808 8.751-7.904c.381-.339-.083-.527-.591-.188l-10.82 6.812-4.66-1.457c-1.013-.317-1.033-1.013.212-1.499l18.216-7.022c.844-.316 1.583.197 1.306 1.405z"/>
+                  </svg>
+                </div>
+                <span className="text-[11px] font-bold text-center">Telegram</span>
+              </a>
+
+              {/* Twitter / X */}
+              <a
+                href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`${shareTitle} - Layanan Konseling UPB`)}&url=${encodeURIComponent(currentUrl)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex flex-col items-center justify-center p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 hover:scale-105 transition-all text-slate-800 dark:text-slate-200 cursor-pointer group"
+              >
+                <div className="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center mb-1.5 shadow-2xs">
+                  <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                  </svg>
+                </div>
+                <span className="text-[11px] font-bold text-center">X / Twitter</span>
+              </a>
+
+              {/* Facebook */}
+              <a
+                href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentUrl)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex flex-col items-center justify-center p-3 rounded-2xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800/60 hover:scale-105 transition-all text-blue-700 dark:text-blue-300 cursor-pointer group"
+              >
+                <div className="w-8 h-8 rounded-full bg-[#1877F2] text-white flex items-center justify-center mb-1.5 shadow-2xs">
+                  <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                  </svg>
+                </div>
+                <span className="text-[11px] font-bold text-center">Facebook</span>
+              </a>
+
+              {/* LinkedIn */}
+              <a
+                href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(currentUrl)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex flex-col items-center justify-center p-3 rounded-2xl bg-sky-50 dark:bg-sky-950/40 border border-sky-200 dark:border-sky-800/60 hover:scale-105 transition-all text-sky-800 dark:text-sky-300 cursor-pointer group"
+              >
+                <div className="w-8 h-8 rounded-full bg-[#0A66C2] text-white flex items-center justify-center mb-1.5 shadow-2xs">
+                  <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+                    <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+                  </svg>
+                </div>
+                <span className="text-[11px] font-bold text-center">LinkedIn</span>
+              </a>
+            </div>
+          </div>
+
+          {/* Salin Tautan (Copy Link) */}
+          <div className="space-y-2">
+            <label className="block text-xs font-bold text-stone-600 dark:text-slate-400 uppercase tracking-wider">
+              Salin Tautan Langsung
+            </label>
+
+            <div className="flex items-center gap-2 p-1.5 pl-3 bg-stone-100 dark:bg-[#15304E] rounded-2xl border border-stone-200 dark:border-sky-800/70">
+              <input
+                type="text"
+                readOnly
+                value={currentUrl}
+                className="w-full bg-transparent text-xs text-stone-700 dark:text-slate-300 font-mono focus:outline-hidden select-all"
+              />
+              <button
+                type="button"
+                onClick={handleCopyLink}
+                className={`px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer shrink-0 shadow-2xs ${
+                  isCopied
+                    ? 'bg-emerald-600 text-white font-bold'
+                    : 'bg-[#0EA5E9] hover:bg-[#0284C7] text-white'
+                }`}
+              >
+                {isCopied ? (
+                  <>
+                    <Check className="w-3.5 h-3.5" />
+                    <span>Tersalin!</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-3.5 h-3.5" />
+                    <span>Salin Link</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    );
   };
 
   // ==============================================================
@@ -186,7 +394,7 @@ export const ArticlesSection: React.FC<ArticlesSectionProps> = ({
 
             {/* Share Button */}
             <button
-              onClick={() => handleShare(activeArticle)}
+              onClick={() => handleOpenShare(activeArticle)}
               className="p-2.5 px-3.5 text-stone-500 dark:text-sky-200 hover:text-stone-800 dark:hover:text-white bg-white dark:bg-[#0F243C] border border-stone-200 dark:border-sky-700/60 rounded-xl transition-colors cursor-pointer shadow-2xs inline-flex items-center gap-1.5 text-xs font-semibold"
               title="Bagikan artikel ini"
             >
@@ -338,10 +546,6 @@ export const ArticlesSection: React.FC<ArticlesSectionProps> = ({
             </div>
           </div>
 
-          {shareToast && (
-            <p className="text-xs text-center text-sky-600 dark:text-sky-300 mt-2 font-medium">Tautan artikel berhasil disalin!</p>
-          )}
-
         </article>
 
         {/* Bottom Back Navigation Bar */}
@@ -364,6 +568,9 @@ export const ArticlesSection: React.FC<ArticlesSectionProps> = ({
             ↑ Kembali ke Atas
           </button>
         </div>
+
+        {/* Share Modal */}
+        {renderShareModal()}
 
       </div>
     );
@@ -483,12 +690,26 @@ export const ArticlesSection: React.FC<ArticlesSectionProps> = ({
                 <div className="pt-4 border-t border-stone-100 dark:border-sky-800/60 flex items-center justify-between">
                   <div className="text-xs text-stone-500 dark:text-slate-400 flex items-center gap-1.5">
                     <UserCheck className="w-3.5 h-3.5 text-[#0EA5E9] dark:text-sky-400" />
-                    <span className="font-medium text-stone-800 dark:text-sky-100 truncate max-w-[170px]">{article.author.name}</span>
+                    <span className="font-medium text-stone-800 dark:text-sky-100 truncate max-w-[150px]">{article.author.name}</span>
                   </div>
-                  <span className="inline-flex items-center gap-1 text-xs font-semibold text-[#0EA5E9] dark:text-sky-400 group-hover:text-[#0284C7] dark:group-hover:text-sky-300 transition-colors">
-                    <span>Baca</span>
-                    <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />
-                  </span>
+
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleOpenShare(article);
+                      }}
+                      className="p-1.5 rounded-lg text-stone-400 hover:text-stone-700 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-sky-900/40 transition-colors cursor-pointer"
+                      title="Bagikan artikel"
+                    >
+                      <Share2 className="w-3.5 h-3.5" />
+                    </button>
+                    <span className="inline-flex items-center gap-1 text-xs font-semibold text-[#0EA5E9] dark:text-sky-400 group-hover:text-[#0284C7] dark:group-hover:text-sky-300 transition-colors">
+                      <span>Baca</span>
+                      <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />
+                    </span>
+                  </div>
                 </div>
               </article>
             );
@@ -505,6 +726,9 @@ export const ArticlesSection: React.FC<ArticlesSectionProps> = ({
           </button>
         </div>
       )}
+
+      {/* Share Modal */}
+      {renderShareModal()}
 
     </div>
   );
