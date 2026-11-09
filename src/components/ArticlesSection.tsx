@@ -292,20 +292,14 @@ export const ArticlesSection: React.FC<ArticlesSectionProps> = ({
               </div>
             ))}
 
-            <div className="pt-4 border-t border-stone-200 dark:border-sky-800/60 space-y-3">
-              <h3 className="text-base font-bold text-stone-900 dark:text-white">Refleksi untuk Mahasiswa</h3>
-              <p className="text-stone-600 dark:text-slate-300 leading-relaxed font-normal">
-                {activeArticle.conclusion}
-              </p>
-            </div>
-
-            {/* Takeaway box */}
-            <div className="p-5 rounded-2xl bg-[#0EA5E9]/10 dark:bg-sky-900/40 border border-[#0EA5E9]/20 dark:border-sky-700/60 text-stone-900 dark:text-white">
-              <p className="text-xs font-bold text-[#0EA5E9] dark:text-sky-300 uppercase tracking-wider mb-1">Pesan Utama untuk Dibawa Hari Ini:</p>
-              <p className="text-sm sm:text-base font-semibold text-stone-900 dark:text-sky-50">
-                {activeArticle.takeawayMessage}
-              </p>
-            </div>
+            {activeArticle.conclusion && (
+              <div className="pt-4 border-t border-stone-200 dark:border-sky-800/60 space-y-3">
+                <h3 className="text-base font-bold text-stone-900 dark:text-white">Refleksi untuk Mahasiswa</h3>
+                <p className="text-stone-600 dark:text-slate-300 leading-relaxed font-normal">
+                  {activeArticle.conclusion}
+                </p>
+              </div>
+            )}
 
           </div>
 

@@ -257,7 +257,8 @@ export const ManageArticles: React.FC<ManageArticlesProps> = ({
                 text: htmlContent,
               }
             ],
-            takeawayMessage: art.takeawayMessage || 'Kamu berharga dan tidak sendirian melewati proses kuliah ini.',
+            conclusion: art.conclusion || '',
+            takeawayMessage: '',
           };
         }
         return art;
@@ -281,8 +282,8 @@ export const ManageArticles: React.FC<ManageArticlesProps> = ({
             text: htmlContent,
           }
         ],
-        conclusion: 'Menjaga kesehatan mental selama perkuliahan adalah investasi jangka panjang untuk masa depanmu.',
-        takeawayMessage: 'Ambil jeda sejenak jika merasa lelah. Kamu tidak sendirian.',
+        conclusion: '',
+        takeawayMessage: '',
         author: {
           name: 'Tim Konseling DIRMAWA UPB',
           role: 'Konselor Mahasiswa',
